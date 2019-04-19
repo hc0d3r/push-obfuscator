@@ -20,29 +20,29 @@ if($len == 0){
 }
 
 say "section .text";
-say "global _start";
+say "  global _start";
 say "_start:";
 
 # a way to get the rip
-say "call 4";
+say "  call 4";
 
 # save rbp in stack
-say "push rbp";
+say "  push rbp";
 
 # save stack pointer
-say "mov rbp, rsp";
+say "  mov rbp, rsp";
 
 # now rsp has the address of push rbp, remember call 4
-say "mov rsp, [rsp+8]";
+say "  mov rsp, [rsp+8]";
 
 # -5 because 'call 4' has five byte
-say "sub rsp, 5";
+say "  sub rsp, 5";
 
 # save the address to return after
-say "mov [rbp+8], rsp";
+say "  mov [rbp+8], rsp";
 
 # 'alloc' space for instructions
-say "add rsp, $len";
+say "  add rsp, $len";
 
 # opcode len in bytes for previous instructions:
 # 5+1+3+5+4+4+(4+$pad)
@@ -57,19 +57,19 @@ if($len > 127){
 # write nops to prevent push instructions
 # overwrite the push instructions, õ.õ
 if($len > $limit+4){
-    say "times ".($len-($limit+4))." db 0x90";
+    say "  times ".($len-($limit+4))." db 0x90";
 }
 
 # write all the shit
 for(my $i=$len; $i>0; $i-=2){
-    say "push word 0x". lc($sc[$i-1]). lc($sc[$i-2]);
+    say "  push word 0x". lc($sc[$i-1]). lc($sc[$i-2]);
 }
 
 # restore stack pointer
-say "mov rsp, rbp";
+say "  mov rsp, rbp";
 
 # restore rbp
-say "pop rbp";
+say "  pop rbp";
 
 # jump to 'call 4', now overwrited with shellcode
-say "ret";
+say "  ret";
